@@ -1,0 +1,79 @@
+/* Scoped to CampaignForm only */
+.campaign-form-container {
+  max-width: 600px;
+  margin: 0 auto; 
+  padding: 1.5rem;
+  background-color: #fafafa;
+  margin-top: 100px;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+  font-family: Arial, sans-serif;
+}
+
+.campaign-form-container h2 {
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.campaign-form .form-group {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.campaign-form label {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: #555;
+}
+
+.campaign-form input[type="text"],
+.campaign-form input[type="number"],
+.campaign-form textarea {
+  padding: 0.5rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  resize: vertical;
+  transition: border-color 0.3s ease;
+}
+
+.campaign-form input[type="text"]:focus,
+.campaign-form input[type="number"]:focus,
+.campaign-form textarea:focus {
+  outline: none;
+  border-color: #4caf50;
+}
+
+.campaign-form textarea {
+  min-height: 100px;
+}
+
+.submit-button {
+  width: 100%;
+  background-color: #4caf50;
+  color: white;
+  font-weight: 600;
+  padding: 0.7rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.25s ease;
+}
+
+.submit-button:disabled {
+  background-color: #7baaf7;
+  cursor: not-allowed;
+}
+
+.submit-button:not(:disabled):hover {
+  background-color: #4caf50;
+}
+
+.error-message {
+  color: #b00020;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-align: center;
+}
