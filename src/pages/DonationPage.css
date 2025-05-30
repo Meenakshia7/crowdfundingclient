@@ -1,0 +1,73 @@
+
+ .donation-page-wrapper {
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.top-back-button {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: none;
+  border: none;
+  font-size: 1rem;
+  color: #4caf50;
+  cursor: pointer;
+}
+
+.donation-card {
+  text-align: center;
+}
+
+.donation-title {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+}
+
+.donation-description {
+  font-size: 1rem;
+  margin-bottom: 1rem;
+}
+
+.progress-container {
+  margin: 1.5rem 0;
+}
+
+.progress-circle {
+  display: inline-block;
+}
+
+.button-group {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.donate-action-button,
+.share-action-button {
+  background-color: #225024;
+  color: #5bc05e;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 100%;
+  font-weight: bold;
+  width: 120px;
+}
+
+.share-action-button {
+  background-color: #5bc05e;
+  color: #214222;
+}
+
+.donate-action-button:hover,
+.share-action-button:hover {
+  opacity: 0.9;
+}

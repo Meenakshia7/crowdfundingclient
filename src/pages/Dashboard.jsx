@@ -1,7 +1,9 @@
 
+
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { selectIsAdmin } from '../features/auth/authSlice';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import CampaignCard from '../components/CampaignCard';
 import './dashboard.css';
@@ -12,15 +14,17 @@ const Dashboard = () => {
   const [myCampaigns, setMyCampaigns] = useState([]);
   const [view, setView] = useState('overview');
   const [error, setError] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const user = JSON.parse(localStorage.getItem('user'));
         const res = await axios.get('http://localhost:3001/api/auth/profile', {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
+          headers: { Authorization: `Bearer ${user.token}` },
         });
         setProfile(res.data);
       } catch (err) {
@@ -28,7 +32,6 @@ const Dashboard = () => {
         setError('Failed to load profile.');
       }
     };
-
     fetchProfile();
   }, []);
 
@@ -38,9 +41,7 @@ const Dashboard = () => {
       try {
         const user = JSON.parse(localStorage.getItem('user'));
         const res = await axios.get('http://localhost:3001/api/campaigns', {
-          headers: {
-            Authorization: `Bearer ${user.token}`,
-          },
+          headers: { Authorization: `Bearer ${user.token}` },
         });
         const myOwnCampaigns = res.data.filter(c => c.owner._id === profile._id);
         setMyCampaigns(myOwnCampaigns);
@@ -54,6 +55,22 @@ const Dashboard = () => {
       fetchMyCampaigns();
     }
   }, [view, profile]);
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentCampaigns = myCampaigns.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(myCampaigns.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+    window.scrollTo(0, 0);
+  };
+
+  const handleCampaignUpdate = (updatedCampaign) => {
+    setMyCampaigns(prev =>
+      prev.map(c => (c._id === updatedCampaign._id ? updatedCampaign : c))
+    );
+  };
 
   if (error) {
     return <div className="dashboard"><p className="error">{error}</p></div>;
@@ -77,13 +94,78 @@ const Dashboard = () => {
       case 'campaigns':
         return (
           <div>
-            <h2>My Campaigns</h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <h2>My Campaigns</h2>
+              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
+                <button
+                  onClick={() => navigate('/campaigns/new')}
+                  style={{
+                    padding: '8px 16px',
+                    backgroundColor: '#4CAF50',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '4px',
+                    cursor: 'pointer',
+                    fontWeight: 'bold'
+                  }}
+                >
+                  + Create New Campaign
+                </button>
+                {/* <button
+                  onClick={() => navigate('/edit-profile')}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: '#4CAF50'
+                  }}
+                  title="Edit Profile"
+                >
+                  <FiEdit size={24} />
+                </button> */}
+              </div>
+            </div>
+
             {myCampaigns.length === 0 ? (
               <p>You have no campaigns yet.</p>
             ) : (
-              myCampaigns.map(campaign => (
-                <CampaignCard key={campaign._id} campaign={campaign} />
-              ))
+              <>
+                <div className="campaign-list" style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                  gap: '20px',
+                  marginTop: '20px'
+                }}>
+                  {currentCampaigns.map(campaign => (
+                    <CampaignCard
+                      key={campaign._id}
+                      campaign={campaign}
+                      showEdit={true}  // ✅ only on this page
+                      onUpdate={handleCampaignUpdate}
+                    />
+                  ))}
+                </div>
+
+                <div style={{ marginTop: '20px', textAlign: 'center' }}>
+                  {[...Array(totalPages)].map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handlePageChange(index + 1)}
+                      style={{
+                        margin: '0 5px',
+                        padding: '8px 12px',
+                        backgroundColor: currentPage === index + 1 ? '#333' : '#eee',
+                        color: currentPage === index + 1 ? '#fff' : '#333',
+                        border: 'none',
+                        borderRadius: '4px',
+                        cursor: 'pointer'
+                      }}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+                </div>
+              </>
             )}
           </div>
         );
@@ -122,9 +204,7 @@ const Dashboard = () => {
           <li onClick={() => setView('campaigns')}>My Campaigns</li>
           <li onClick={() => setView('donations')}>My Donations</li>
           <li onClick={() => setView('settings')}>Settings</li>
-          {isAdmin && (
-            <li onClick={() => setView('admin')}>Admin Panel</li>
-          )}
+          {isAdmin && <li onClick={() => setView('admin')}>Admin Panel</li>}
         </ul>
       </aside>
       <main className="dashboard-content">

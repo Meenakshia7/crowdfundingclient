@@ -3,10 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { createCampaign, updateCampaign, fetchCampaignById } from './campaignSlice';
 import { useNavigate, useParams } from 'react-router-dom';
-import './CampaignForm.css'; // Scoped CSS for this component only
+import './CampaignForm.css';
+
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3001';
 
 const CampaignForm = () => {
-  const { id } = useParams(); // If editing, get id from URL
+  const { id } = useParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -15,22 +17,41 @@ const CampaignForm = () => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [goalAmount, setGoalAmount] = useState('');
+  const [imageFile, setImageFile] = useState(null);  // For new uploaded file
+  const [previewUrl, setPreviewUrl] = useState('');  // For preview
 
-  // If editing, fetch existing campaign details on mount
   useEffect(() => {
     if (id) {
       dispatch(fetchCampaignById(id));
     }
   }, [dispatch, id]);
 
-  // Populate form fields when currentCampaign updates (edit mode)
   useEffect(() => {
     if (id && currentCampaign) {
       setTitle(currentCampaign.title || '');
       setDescription(currentCampaign.description || '');
       setGoalAmount(currentCampaign.goalAmount || '');
+
+      // Build server image URL if image exists and no new upload yet
+      if (currentCampaign.image && !imageFile) {
+        setPreviewUrl(`${BACKEND_URL}/uploads/${currentCampaign.image}`);
+      }
     }
-  }, [id, currentCampaign]);
+  }, [id, currentCampaign, imageFile]);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setImageFile(file);
+
+      // Preview local uploaded image
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewUrl(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -40,22 +61,22 @@ const CampaignForm = () => {
       return;
     }
 
-    const campaignData = {
-      title,
-      description,
-      goalAmount: Number(goalAmount),
-    };
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('goalAmount', Number(goalAmount));
+    if (imageFile) {
+      formData.append('image', imageFile);
+    }
 
     if (id) {
-      // Update campaign
-      dispatch(updateCampaign({ id, campaignData })).then((res) => {
+      dispatch(updateCampaign({ id, campaignData: formData })).then((res) => {
         if (!res.error) {
           navigate(`/campaigns/${id}`);
         }
       });
     } else {
-      // Create campaign
-      dispatch(createCampaign(campaignData)).then((res) => {
+      dispatch(createCampaign(formData)).then((res) => {
         if (!res.error) {
           navigate('/campaigns');
         }
@@ -69,7 +90,7 @@ const CampaignForm = () => {
       {loading && <p>Loading...</p>}
       {error && <p className="error-message">Error: {error}</p>}
 
-      <form onSubmit={handleSubmit} className="campaign-form">
+      <form onSubmit={handleSubmit} className="campaign-form" encType="multipart/form-data">
         <div className="form-group">
           <label htmlFor="title">Title:</label>
           <input
@@ -103,6 +124,23 @@ const CampaignForm = () => {
             onChange={(e) => setGoalAmount(e.target.value)}
             required
           />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="image">Campaign Image:</label>
+          <input
+            id="image"
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+          />
+          {previewUrl && (
+            <img
+              src={previewUrl}
+              alt="Preview"
+              style={{ marginTop: '10px', maxWidth: '300px', maxHeight: '200px', borderRadius: '8px' }}
+            />
+          )}
         </div>
 
         <button type="submit" disabled={loading} className="submit-button">

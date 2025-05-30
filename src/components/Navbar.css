@@ -1,17 +1,118 @@
 
-/* src/components/Navbar.css */
-.navbar {
-  background-color: #333;
-  padding: 10px;
+ 
+
+  .navbar {
   display: flex;
-  gap: 20px;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(90deg, #4caf50, #43a047);
+  height: 60px;
+  padding: 0 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.navbar a {
-  color: white;
+.navbar-left,
+.navbar-center {
+  display: flex;
+  align-items: center;
+}
+.navbar-right {
+  display: flex;
+  align-items: center;
+  margin-right: 40px;
+  gap: 60px;
+}
+
+ .navbar-right a {
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: 500;
+} 
+
+.navbar-logo {
+  display: flex;
+  align-items: center;
   text-decoration: none;
 }
 
-.navbar a:hover {
-  text-decoration: underline;
+
+ .logo-text {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 26px;
+  font-weight: 500;
+  margin-left: 8px;
+  color: #ffffff;
 }
+
+
+.navbar-center a {
+  margin: 0 12px;
+  text-decoration: none;
+  color: #fff;
+  font-weight: 500;
+  transition: color 0.3s;
+}
+
+.navbar-center a:hover {
+  color: #e8f5e9;
+}
+
+.user-icon {
+  font-size: 28px;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.user-icon:hover {
+  transform: scale(1.2);
+}
+
+.dropdown {
+  position: relative;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 110%;
+  right: 0;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+ overflow: hidden;
+  opacity: 0;
+  visibility: hidden; 
+   transform: translateY(-10px);
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+  z-index: 10; 
+}
+
+.dropdown.open .dropdown-menu {
+      opacity: 1;
+    visibility: visible;
+  transform: translateY(0); 
+} 
+
+.dropdown-menu a,
+.dropdown-menu button {
+  display: block;
+  padding: 10px 20px;
+  color: #333;
+  text-decoration: none;
+  background: #fff;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s; 
+}
+
+.dropdown-menu a:hover,
+.dropdown-menu button:hover {
+  background: #f1f1f1;
+}  
+
+
+
+ 

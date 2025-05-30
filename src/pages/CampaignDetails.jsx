@@ -1,9 +1,12 @@
 
+
+
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCampaignById } from '../features/campaigns/campaignSlice';
-import './CampaignDetails.css'; // ⏪ import the CSS file
+
+import './CampaignDetails.css'; // import the CSS file
 
 const CampaignDetails = () => {
   const { id } = useParams();
@@ -49,6 +52,7 @@ const CampaignDetails = () => {
           Last updated: {new Date(currentCampaign.updatedAt).toLocaleString()}
         </p>
       </div>
+
 
       <div className="details-back">
         <button onClick={() => navigate(-1)} className="back-button">

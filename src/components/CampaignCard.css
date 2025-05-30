@@ -1,64 +1,138 @@
 .campaign-card {
-  position: relative;
+  width: 300px;
+  height: 450px;
+  display: flex;
+  flex-direction: column;
   border: 1px solid #ddd;
   border-radius: 8px;
-  padding: 1rem;
-  margin-bottom: 1rem;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   background-color: #fff;
 }
 
+.campaign-image-container {
+  flex: 0 0 150px;
+  overflow: hidden;
+}
+
+.campaign-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.campaign-content {
+  flex: 1;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
 .campaign-title {
-  font-size: 1.5rem;
-  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  margin: 0 0 8px 0;
 }
 
 .campaign-description {
-  margin-bottom: 0.5rem;
-  color: #555;
-}
-
-.campaign-stats {
-  margin-bottom: 0.5rem;
   font-size: 0.9rem;
+  flex: 1;
+  overflow: hidden;
+  margin: 0 0 8px 0;
 }
 
+.campaign-goal,
 .campaign-status {
-  margin-bottom: 0.5rem;
-  font-weight: bold;
-}
-
-.campaign-link {
-  color: #007bff;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.campaign-owner-actions {
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  display: flex;
-  gap: 8px;
-}
-
-.campaign-button {
-  padding: 0.4rem 0.8rem;
-  border: none;
-  border-radius: 4px;
-  color: #fff;
-  cursor: pointer;
   font-size: 0.85rem;
+  margin: 4px 0;
 }
 
-.edit-button {
-  background-color: #28a745;
+.campaign-input,
+.campaign-textarea {
+  width: 100%;
+  margin-bottom: 8px;
+  padding: 6px 8px;
+  font-size: 0.9rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
 }
 
-.delete-button {
-  background-color: #dc3545;
+.campaign-textarea {
+  resize: none;
 }
 
-.campaign-button:hover {
-  opacity: 0.9;
+.button-row {
+  margin-top: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.actions-row {
+  gap: 10px;
+}
+
+/* Buttons */
+.btn {
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  padding: 8px 10px;
+  border: none;
+  transition: background-color 0.3s ease;
+}
+
+.details-btn {
+  background: #4caf50;
+  color: #f7faf7;
+  text-decoration: none;
+  padding: 6px 1px;
+  flex: 1;
+  text-align: center;
+}
+
+
+.donate-btn {
+  background-color: #4caf50;
+  color: white;
+  flex: 1;
+  /* margin-left: px; */
+}
+
+
+
+.edit-btn {
+  background: none;
+  border: none;
+  color: #4caf50;
+  padding: 0 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+
+
+/* Edit mode buttons */
+.save-btn {
+  background-color: #4caf50;
+  color: white;
+  flex: 1;
+  margin-right: 8px;
+}
+
+.save-btn:hover {
+  background-color: #388e3c;
+}
+
+.cancel-btn {
+  background-color: #f44336;
+  color: white;
+  flex: 1;
+}
+
+.cancel-btn:hover {
+  background-color: #c62828;
 }

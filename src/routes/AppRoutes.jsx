@@ -10,6 +10,8 @@ import CampaignDetails from '../pages/CampaignDetails';
 import MyCampaigns from '../pages/MyCampaigns';
 import CampaignForm from '../features/campaigns/CampaignForm';
 
+
+
 const AppRoutes = () => (
   <Routes>
     <Route path="/" element={<Home />} />
@@ -20,6 +22,8 @@ const AppRoutes = () => (
     <Route path="/my-campaigns" element={<MyCampaigns />} />             {/* ✅ My campaigns */}
     <Route path="/campaigns/new" element={<CampaignForm />} />
     <Route path="/campaigns/:id/edit" element={<CampaignForm />} />
+   
+   
   </Routes>
 );
 
