@@ -56,6 +56,7 @@ const CampaignList = () => {
                 key={campaign._id}
                 campaign={campaign}
                 showEdit={false}  // ✅ explicitly no edit button here
+                allowWithdraw={false}  // 👈 explicitly block withdraw here
               />
             ))}
           </div>

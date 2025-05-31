@@ -1,5 +1,6 @@
 
-.home-container {
+
+ .home-container {
   max-width: 1400px;
   margin: 0 auto;
   padding: 2rem;
@@ -14,7 +15,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   margin-bottom: 3rem;
 }
-
+ 
 .home-hero h1 {
   font-size: 3rem;
   margin-bottom: 1rem;
@@ -30,136 +31,131 @@
   padding: 10px 20px;
   background: white;
   color: #4caf50;
-  border: 2px solid #4caf50;
+  border: 2px ;
   cursor: pointer;
   text-decoration: none;
   border-radius: 5px;
   font-weight: bold;
 }
 
-.home-cta:hover {
-  background: #4caf50;
-  color: white;
+.home-features {
+  margin-top: 20px;
 }
 
-.home-features {
+.campaign-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 20px;
 }
 
-.feature-card {
-  background: #ffffff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
-  text-align: left;
+.campaign-card {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  min-height: 280px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transition: transform 0.2s ease;
 }
 
-.feature-card:hover {
+.campaign-card:hover {
   transform: translateY(-5px);
 }
 
-.feature-card h2 {
-  font-size: 1.3rem;
+.campaign-image-container {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+}
+
+.campaign-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.campaign-content {
+  padding: 15px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.campaign-title {
+  font-size: 1.2rem;
+  margin: 0 0 10px;
+}
+
+.campaign-description {
+  font-size: 0.9rem;
   margin-bottom: 10px;
+  color: #555;
 }
 
 .donation-stats {
   font-size: 0.9rem;
-  margin-bottom: 12px;
-}
-
-.card-bottom {
-  margin-top: auto;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
+  margin-bottom: 10px;
+  margin-right: 115px;
 }
 
 .progress-section {
-  flex: 1;
+  margin-bottom: 10px;
 }
 
 .progress-bar {
-  background-color: #e0e0e0;
-  border-radius: 10px;
+  width: 100%;
+  background-color: #eee;
+  height: 8px;
+  border-radius: 4px;
   overflow: hidden;
-  height: 10px;
-  margin-bottom: 4px;
 }
 
 .progress-bar-fill {
-  background: linear-gradient(90deg, #ff9800, #ffc107);
   height: 100%;
-  width: 0%;
-  transition: width 0.8s ease;
+  background-color: #4caf50;
 }
 
 .progress-percentage {
   font-size: 0.8rem;
-  color: #666;
+  margin-top: 5px;
+  text-align: right;
 }
 
-button {
-  padding: 8px 16px;
-  background: #4caf50;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
-  font-weight: bold;
-  white-space: nowrap;
-}
-
-button:hover {
-  background: #388e3c;
-}
-
-
-
-.pagination {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-top: 2rem;
-  gap: 1rem;
-}
-
-.pagination button {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
+.donate-button {
+  padding: 8px 52px;
   background-color: #4caf50;
   color: white;
   border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 6px;
+  border-radius: 4px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  align-self: center;
+}
+
+.view-campaign-button:hover {
+  background-color: #4caf50;
+}
+
+.pagination {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.pagination button {
+  margin: 15px 5px;
+  padding: 8px 12px;
+  background-color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .pagination button:disabled {
-  background-color: #9e9e9e;
+  color: #ccc;
   cursor: not-allowed;
 }
 
-.pagination button:hover:not(:disabled) {
-  background-color: #45a049;
-}
-
-.pagination span {
-  font-weight: 500;
-  color: #333;
-}
-
 .error-message {
-  color: #ff5252;
-  font-weight: bold;
+  color: red;
+  text-align: center;
 }

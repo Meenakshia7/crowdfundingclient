@@ -7,7 +7,6 @@ import './Home.css';
 import Footer from '../components/Footer';
 import { FaChevronLeft, FaChevronRight } from 'react-icons/fa';
 
-
 const AnimatedNumber = ({ value }) => {
   const [displayValue, setDisplayValue] = useState(0);
 
@@ -30,6 +29,14 @@ const AnimatedNumber = ({ value }) => {
   }, [value]);
 
   return <span>{displayValue.toFixed(1)}</span>;
+};
+
+// Format numbers as ₹10K, ₹1.5L, ₹2Cr
+const formatINR = (num) => {
+  if (num >= 10000000) return `₹${(num / 10000000).toFixed(1)}Cr`;
+  if (num >= 100000) return `₹${(num / 100000).toFixed(1)}L`;
+  if (num >= 1000) return `₹${(num / 1000).toFixed(1)}K`;
+  return `₹${num.toLocaleString('en-IN')}`;
 };
 
 const Home = () => {
@@ -63,6 +70,8 @@ const Home = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   };
 
+  const backendUrl = 'http://localhost:3001';
+
   return (
     <div className="home-container">
       <header className="home-hero">
@@ -78,47 +87,71 @@ const Home = () => {
         {status === 'loading' && <p>Loading campaigns...</p>}
         {error && <p className="error-message">{error}</p>}
 
-        {currentCampaigns.map((campaign) => {
-          const progressPercentage = Math.min(
-            (campaign.raisedAmount / campaign.goalAmount) * 100,
-            100
-          );
+        <div className="campaign-grid">
+          {currentCampaigns.map((campaign) => {
+            const progressPercentage = Math.min(
+              (campaign.raisedAmount / campaign.goalAmount) * 100,
+              100
+            );
 
-          return (
-            <div key={campaign.id} className="feature-card">
-              <h2>{campaign.title}</h2>
+            const imageUrl = campaign.image
+              ? `${backendUrl}/uploads/${campaign.image}`
+              : '/placeholder.jpg';
 
-              <div className="donation-stats">
-                <span>${campaign.raisedAmount.toLocaleString()}</span> raised of{' '}
-                <span>${campaign.goalAmount.toLocaleString()}</span>
-              </div>
-
-              <div className="card-bottom">
-                <div className="progress-section">
-                  <div className="progress-bar">
-                    <div
-                      className="progress-bar-fill"
-                      style={{ width: `${progressPercentage}%` }}
-                    ></div>
-                  </div>
-                  <div className="progress-percentage">
-                    <AnimatedNumber value={progressPercentage} />% funded
-                  </div>
+            return (
+              <div key={campaign.id} className="campaign-card">
+                <div className="campaign-image-container">
+                  <img
+                    src={imageUrl}
+                    alt={campaign.title}
+                    className="campaign-image"
+                  />
                 </div>
 
-                <button onClick={() => navigate(`/campaigns/${campaign.id}`)}>
-                  View Campaign
-                </button>
+                <div className="campaign-content">
+                  <h2 className="campaign-title">{campaign.title}</h2>
+
+                  <p className="campaign-description">
+                    {campaign.description?.length > 80
+                      ? campaign.description.slice(0, 80) + '...'
+                      : campaign.description}
+                  </p>
+
+                  <div className="donation-stats">
+                    <span>{formatINR(campaign.raisedAmount)}</span> raised of{' '}
+                    <span>{formatINR(campaign.goalAmount)}</span>
+                  </div>
+
+                  <div className="progress-section">
+                    <div className="progress-bar">
+                      <div
+                        className="progress-bar-fill"
+                        style={{ width: `${progressPercentage}%` }}
+                      ></div>
+                    </div>
+                    <div className="progress-percentage">
+                      <AnimatedNumber value={progressPercentage} />% funded
+                    </div>
+                  </div>
+
+                  <button
+                    className="donate-button"
+                    onClick={() => navigate(`/donate/${campaign._id}`)}
+                  >
+                    Donate
+                  </button>
+
+                </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </section>
 
-      {/* {totalPages > 1 && (
+      {totalPages > 1 && (
         <div className="pagination">
           <button onClick={handlePrevPage} disabled={currentPage === 1}>
-            Previous
+            <FaChevronLeft />
           </button>
 
           <span>
@@ -126,26 +159,18 @@ const Home = () => {
           </span>
 
           <button onClick={handleNextPage} disabled={currentPage === totalPages}>
-            Next
+            <FaChevronRight />
           </button>
         </div>
-      )} */}
-      <div className="pagination">
-  <button onClick={handlePrevPage} disabled={currentPage === 1}>
-    <FaChevronLeft /> 
-  </button>
+      )}
 
-  <span>
-    Page {currentPage} of {totalPages}
-  </span>
-
-  <button onClick={handleNextPage} disabled={currentPage === totalPages}>
-     <FaChevronRight />
-  </button>
-</div>
-<Footer/>
+      <Footer />
     </div>
   );
 };
 
 export default Home;
+
+
+
+

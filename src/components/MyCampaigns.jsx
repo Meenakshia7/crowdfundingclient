@@ -1,9 +1,7 @@
 
-
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { FiEdit } from 'react-icons/fi';
 import { fetchUserCampaigns } from '../features/campaigns/campaignSlice';
 import CampaignCard from '../components/CampaignCard';
 
@@ -28,14 +26,16 @@ const MyCampaigns = () => {
     navigate('/create-campaign');
   };
 
-  const handleEditProfileClick = () => {
-    navigate('/edit-profile');
-  };
-
   const handleCampaignUpdate = (updatedCampaign) => {
-    setCampaigns(prev =>
-      prev.map(c => (c._id === updatedCampaign._id ? updatedCampaign : c))
-    );
+    if (updatedCampaign === null) {
+      // If null, remove the campaign (deleted)
+      setCampaigns(prev => prev.filter(c => c._id !== updatedCampaign._id));
+    } else {
+      // If present, update the campaign in the list
+      setCampaigns(prev =>
+        prev.map(c => (c._id === updatedCampaign._id ? updatedCampaign : c))
+      );
+    }
   };
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -55,23 +55,20 @@ const MyCampaigns = () => {
     <div style={{ padding: '20px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h1>My Campaigns</h1>
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-          <button
-            onClick={handleCreateClick}
-            style={{
-              padding: '8px 16px',
-              backgroundColor: '#4CAF50',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px',
-              cursor: 'pointer',
-              fontWeight: 'bold'
-            }}
-          >
-            + Create New Campaign
-          </button>
-          
-        </div>
+        <button
+          onClick={handleCreateClick}
+          style={{
+            padding: '8px 16px',
+            backgroundColor: '#4CAF50',
+            color: 'white',
+            border: 'none',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            fontWeight: 'bold'
+          }}
+        >
+          + Create New Campaign
+        </button>
       </div>
 
       {campaigns.length === 0 ? (
@@ -92,6 +89,7 @@ const MyCampaigns = () => {
                 key={campaign._id}
                 campaign={campaign}
                 showEdit={true}
+                allowWithdraw={true} // 👈 this enables the withdraw + delete logic if goal reached
                 onUpdate={handleCampaignUpdate}
               />
             ))}

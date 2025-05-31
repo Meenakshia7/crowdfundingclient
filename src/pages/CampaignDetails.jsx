@@ -1,6 +1,4 @@
 
-
-
 import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -19,6 +17,14 @@ const CampaignDetails = () => {
     dispatch(fetchCampaignById(id));
   }, [dispatch, id]);
 
+  // Your INR formatting function with Cr, L, K units
+  const formatINR = (num) => {
+    if (num >= 10000000) return `₹${(num / 10000000).toFixed(1)}Cr`;
+    if (num >= 100000) return `₹${(num / 100000).toFixed(1)}L`;
+    if (num >= 1000) return `₹${(num / 1000).toFixed(1)}K`;
+    return `₹${num.toLocaleString('en-IN')}`;
+  };
+
   if (status === 'loading') return <p className="details-loading">Loading campaign details...</p>;
   if (status === 'failed') return <p className="details-error">Error: {error}</p>;
   if (!currentCampaign) return <p className="details-empty">No campaign found.</p>;
@@ -30,10 +36,10 @@ const CampaignDetails = () => {
         <p>{currentCampaign.description}</p>
 
         <p>
-          <strong>Goal Amount:</strong> ${currentCampaign.goalAmount.toLocaleString()}
+          <strong>Goal Amount:</strong> {formatINR(currentCampaign.goalAmount)}
         </p>
         <p>
-          <strong>Raised Amount:</strong> ${currentCampaign.raisedAmount?.toLocaleString() || 0}
+          <strong>Raised Amount:</strong> {formatINR(currentCampaign.raisedAmount || 0)}
         </p>
         <p>
           <strong>Status:</strong> {currentCampaign.status}
@@ -53,7 +59,6 @@ const CampaignDetails = () => {
         </p>
       </div>
 
-
       <div className="details-back">
         <button onClick={() => navigate(-1)} className="back-button">
           ← Back
@@ -64,3 +69,4 @@ const CampaignDetails = () => {
 };
 
 export default CampaignDetails;
+

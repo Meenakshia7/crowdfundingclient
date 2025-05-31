@@ -71,3 +71,10 @@
 .share-action-button:hover {
   opacity: 0.9;
 }
+
+
+.donate-action-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}

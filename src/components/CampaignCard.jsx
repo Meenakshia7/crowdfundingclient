@@ -2,10 +2,18 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { FiEdit } from 'react-icons/fi';
+import { FiEdit, FiTrash2 } from 'react-icons/fi';
 import './CampaignCard.css';
 
-const CampaignCard = ({ campaign, onUpdate, showEdit = false }) => {
+// Format numbers as ₹10K, ₹1.5L, ₹2Cr
+const formatINR = (num) => {
+  if (num >= 10000000) return `₹${(num / 10000000).toFixed(1)}Cr`;
+  if (num >= 100000) return `₹${(num / 100000).toFixed(1)}L`;
+  if (num >= 1000) return `₹${(num / 1000).toFixed(1)}K`;
+  return `₹${num.toLocaleString('en-IN')}`;
+};
+
+const CampaignCard = ({ campaign, onUpdate, showEdit = false, allowWithdraw = false }) => {
   const navigate = useNavigate();
   const backendUrl = 'http://localhost:3001';
   const imageUrl = campaign.image ? `${backendUrl}/uploads/${campaign.image}` : null;
@@ -17,6 +25,8 @@ const CampaignCard = ({ campaign, onUpdate, showEdit = false }) => {
     goalAmount: campaign.goalAmount,
   });
   const [loading, setLoading] = useState(false);
+
+  const isGoalReached = campaign.raisedAmount >= campaign.goalAmount;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,6 +45,30 @@ const CampaignCard = ({ campaign, onUpdate, showEdit = false }) => {
     } catch (err) {
       console.error('Failed to update campaign:', err);
       alert('Failed to update campaign. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleWithdraw = () => {
+    alert(`Withdrawing funds from campaign: "${campaign.title}"`);
+    // Add real withdraw logic here
+  };
+
+  const handleDelete = async () => {
+    if (!window.confirm(`Are you sure you want to delete "${campaign.title}"?`)) return;
+
+    try {
+      setLoading(true);
+      const user = JSON.parse(localStorage.getItem('user'));
+      await axios.delete(`${backendUrl}/api/campaigns/${campaign._id}`, {
+        headers: { Authorization: `Bearer ${user.token}` },
+      });
+      alert(`Campaign "${campaign.title}" deleted successfully.`);
+      if (onUpdate) onUpdate(null);
+    } catch (err) {
+      console.error('Failed to delete campaign:', err);
+      alert('Failed to delete campaign. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -93,35 +127,58 @@ const CampaignCard = ({ campaign, onUpdate, showEdit = false }) => {
                 : campaign.description}
             </p>
             <p className="campaign-goal">
-              Goal: ${campaign.goalAmount.toLocaleString()} | Raised: ${campaign.raisedAmount.toLocaleString()}
+              Goal: {formatINR(campaign.goalAmount)} | Raised: {formatINR(campaign.raisedAmount)}
             </p>
             <p className="campaign-status">
               Status: <strong>{campaign.status}</strong>
             </p>
 
             <div className="button-row actions-row">
-              <button>
               <Link to={`/campaigns/${campaign._id}`} className="btn details-btn">
                 View Details
-              </Link></button>
+              </Link>
 
               {showEdit && (
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="btn edit-btn"
-                  title="Edit Campaign"
-                  aria-label="Edit Campaign"
-                >
-                  <FiEdit size={20} />
-                </button>
+                isGoalReached ? (
+                  allowWithdraw && (
+                    <button
+                      onClick={handleDelete}
+                      className="btn delete-btn"
+                      title="Delete Campaign"
+                      aria-label="Delete Campaign"
+                      disabled={loading}
+                    >
+                      <FiTrash2 size={20} />
+                    </button>
+                  )
+                ) : (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="btn edit-btn"
+                    title="Edit Campaign"
+                    aria-label="Edit Campaign"
+                  >
+                    <FiEdit size={20} />
+                  </button>
+                )
               )}
 
-              <button
-                onClick={() => navigate(`/donate/${campaign._id}`)}
-                className="btn donate-btn"
-              >
-                Donate
-              </button>
+              {isGoalReached && allowWithdraw ? (
+                <button
+                  onClick={handleWithdraw}
+                  className="btn withdraw-btn"
+                  disabled={loading}
+                >
+                  Withdraw
+                </button>
+              ) : (
+                <button
+                  onClick={() => navigate(`/donate/${campaign._id}`)}
+                  className="btn donate-btn"
+                >
+                  Donate
+                </button>
+              )}
             </div>
           </>
         )}

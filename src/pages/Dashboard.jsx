@@ -67,6 +67,11 @@ const Dashboard = () => {
   };
 
   const handleCampaignUpdate = (updatedCampaign) => {
+    if (!updatedCampaign) {
+      // If null, remove (deleted)
+      return;
+    }
+
     setMyCampaigns(prev =>
       prev.map(c => (c._id === updatedCampaign._id ? updatedCampaign : c))
     );
@@ -111,18 +116,6 @@ const Dashboard = () => {
                 >
                   + Create New Campaign
                 </button>
-                {/* <button
-                  onClick={() => navigate('/edit-profile')}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    cursor: 'pointer',
-                    color: '#4CAF50'
-                  }}
-                  title="Edit Profile"
-                >
-                  <FiEdit size={24} />
-                </button> */}
               </div>
             </div>
 
@@ -136,14 +129,18 @@ const Dashboard = () => {
                   gap: '20px',
                   marginTop: '20px'
                 }}>
-                  {currentCampaigns.map(campaign => (
-                    <CampaignCard
-                      key={campaign._id}
-                      campaign={campaign}
-                      showEdit={true}  // ✅ only on this page
-                      onUpdate={handleCampaignUpdate}
-                    />
-                  ))}
+                  {currentCampaigns.map(campaign => {
+                    const isGoalReached = campaign.raisedAmount >= campaign.goalAmount;
+                    return (
+                      <CampaignCard
+                        key={campaign._id}
+                        campaign={campaign}
+                        showEdit={true}
+                        allowWithdraw={isGoalReached} // ✅ only allow withdraw if goal reached
+                        onUpdate={handleCampaignUpdate}
+                      />
+                    );
+                  })}
                 </div>
 
                 <div style={{ marginTop: '20px', textAlign: 'center' }}>

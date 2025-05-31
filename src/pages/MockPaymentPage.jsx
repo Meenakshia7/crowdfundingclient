@@ -1,77 +1,124 @@
-// import React from 'react';
-// import { useLocation, useNavigate } from 'react-router-dom';
-
-// const MockPaymentPage = () => {
-//   const location = useLocation();
-//   const navigate = useNavigate();
-//   const params = new URLSearchParams(location.search);
-//   const campaignId = params.get('campaign');
-
-//   const handleSuccess = () => {
-//     alert('Payment successful! Thank you for your donation.');
-//     navigate(`/campaigns/${campaignId}`);
-//   };
-
-//   const handleCancel = () => {
-//     alert('Payment canceled.');
-//     navigate(`/donate/${campaignId}`);
-//   };
-
-//   return (
-//     <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-//       <h1>Mock Payment Page</h1>
-//       <p>You're donating to campaign ID: {campaignId}</p>
-//       <button onClick={handleSuccess} style={{ marginRight: '1rem' }}>
-//         Simulate Success
-//       </button>
-//       <button onClick={handleCancel}>Simulate Cancel</button>
-//     </div>
-//   );
-// };
-
-// export default MockPaymentPage;
 
 
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import './MockPaymentPage.css'; // create this CSS file for styling
+import axios from 'axios';
+import './MockPaymentPage.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
+
 
 const MockPaymentPage = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const campaignId = searchParams.get('campaign');
 
+  const [campaignTitle, setCampaignTitle] = useState('Loading...');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     amount: '',
   });
+  const [loading, setLoading] = useState(false);
+  const [popupMessage, setPopupMessage] = useState('');
+
+  const formatINR = (num) => {
+    if (!num) return '';
+    const number = Number(num);
+    if (number >= 10000000) return `₹${(number / 10000000).toFixed(1)}Cr`;
+    if (number >= 100000) return `₹${(number / 100000).toFixed(1)}L`;
+    if (number >= 1000) return `₹${(number / 1000).toFixed(1)}K`;
+    return `₹${number.toLocaleString('en-IN')}`;
+  };
+
+  // Fetch the campaign title using campaignId
+  useEffect(() => {
+    const fetchCampaign = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3001/api/campaigns/${campaignId}`);
+        setCampaignTitle(response.data.title || 'Untitled Campaign');
+      } catch (error) {
+        console.error('Error fetching campaign:', error);
+        setCampaignTitle('Unknown Title');
+      }
+    };
+
+    if (campaignId) {
+      fetchCampaign();
+    } else {
+      setCampaignTitle('Unknown Title');
+    }
+  }, [campaignId]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    if (name === 'amount') {
+      if (value === '' || /^\d*\.?\d*$/.test(value)) {
+        setFormData((prev) => ({
+          ...prev,
+          [name]: value,
+        }));
+      }
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Simulate successful payment
-    alert(
-      `Payment successful!\nThank you, ${formData.name}, for donating $${formData.amount} to campaign ${campaignId}.`
-    );
+    if (!campaignId) {
+      setPopupMessage('Campaign ID is missing.');
+      return;
+    }
 
-    // Redirect back to campaigns or dashboard
-    navigate('/campaigns');
+    try {
+      setLoading(true);
+
+      const donationPayload = {
+        amount: Number(formData.amount),
+        message: `Donation from ${formData.name}`,
+        campaignId: campaignId,
+        donorName: formData.name,
+        donorEmail: formData.email,
+      };
+
+      const response = await axios.post(
+        'http://localhost:3001/api/donations',
+        donationPayload
+      );
+
+      console.log('Donation response:', response.data);
+
+      setPopupMessage(
+        ` Payment successfulL!\nThank you, ${formData.name}, for donating ${formatINR(
+          formData.amount
+        )} to "${campaignTitle}" campaign.`
+      );
+    } catch (error) {
+      console.error('Error making donation:', error);
+      setPopupMessage(' Payment failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const closePopup = () => {
+    setPopupMessage('');
+    if (popupMessage.startsWith('✅ Payment successful')) {
+      navigate('/campaigns');
+    }
   };
 
   return (
     <div className="mock-payment-container">
       <h1>Mock Payment Page</h1>
-      <p>Campaign ID: {campaignId}</p>
+      <p>
+        Title: <strong>{campaignTitle}</strong>
+      </p>
 
       <form className="mock-payment-form" onSubmit={handleSubmit}>
         <label>
@@ -97,7 +144,7 @@ const MockPaymentPage = () => {
         </label>
 
         <label>
-          Amount (USD):
+          Amount (INR):
           <input
             type="number"
             name="amount"
@@ -108,14 +155,24 @@ const MockPaymentPage = () => {
           />
         </label>
 
-        <button type="submit" className="confirm-button">
-          Confirm Payment
+        <button type="submit" className="confirm-button" disabled={loading}>
+          {loading ? 'Processing...' : 'Confirm Payment'}
         </button>
       </form>
 
       <button onClick={() => navigate(-1)} className="back-button">
-        ← Back
-      </button>
+  <FontAwesomeIcon icon={faChevronLeft} /> Back
+</button>
+
+
+      {popupMessage && (
+        <div className="popup-message">
+          <span>{popupMessage}</span>
+          <button onClick={closePopup} aria-label="Close popup">
+            Cancel
+          </button>
+        </div>
+      )}
     </div>
   );
 };

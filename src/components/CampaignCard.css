@@ -83,12 +83,19 @@
 }
 
 .details-btn {
-  background: #4caf50;
-  color: #f7faf7;
+  background-color: #4caf50;
+  color: white;
   text-decoration: none;
-  padding: 6px 1px;
+  padding: 8px 12px;
+  border-radius: 4px;
   flex: 1;
   text-align: center;
+  /* display: inline-block; */
+  transition: background-color 0.3s ease;
+}
+
+.details-btn:hover {
+  background-color: #388e3c;
 }
 
 
@@ -135,4 +142,35 @@
 
 .cancel-btn:hover {
   background-color: #c62828;
+}
+
+
+.donate-button {
+  background-color: #4caf50;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.withdraw-button {
+  background-color: #f44336;
+  color: white;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.edit-icon, .delete-icon {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 10px;
+  color: #f81212;
+}
+
+.edit-icon:hover, .delete-icon:hover {
+  color: #000;
 }

@@ -1,5 +1,4 @@
 
-
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import AuthForm from './features/auth/AuthForm';
@@ -35,6 +34,9 @@ function App() {
         {/* Donation page accessible publicly (no auth required) */}
         <Route path="/donate/:id" element={<DonationPage />} />
 
+        {/* Mock Payment page public */}
+        <Route path="/mock-payment" element={<MockPaymentPage />} />
+
         {/* Routes only for guests (not logged in) */}
         <Route element={<GuestRoute />}>
           <Route path="/auth" element={<AuthForm />} />
@@ -52,8 +54,6 @@ function App() {
 
             {/* Edit existing campaign */}
             <Route path="/campaigns/:id/edit" element={<CampaignForm />} />
-
-            <Route path="/mock-payment" element={<MockPaymentPage />} />
 
             {/* Admin-only routes */}
             <Route element={<AdminRoute />}>
