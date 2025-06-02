@@ -3,8 +3,9 @@ import React, { useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCampaignById } from '../features/campaigns/campaignSlice';
-
-import './CampaignDetails.css'; // import the CSS file
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
+import './CampaignDetails.css';
 
 const CampaignDetails = () => {
   const { id } = useParams();
@@ -17,7 +18,6 @@ const CampaignDetails = () => {
     dispatch(fetchCampaignById(id));
   }, [dispatch, id]);
 
-  // Your INR formatting function with Cr, L, K units
   const formatINR = (num) => {
     if (num >= 10000000) return `₹${(num / 10000000).toFixed(1)}Cr`;
     if (num >= 100000) return `₹${(num / 100000).toFixed(1)}L`;
@@ -32,6 +32,11 @@ const CampaignDetails = () => {
   return (
     <div className="details-container">
       <div className="details-card">
+        <button onClick={() => navigate(-1)} className="back-button-inside">
+          <FontAwesomeIcon icon={faChevronLeft} />
+           Back
+        </button>
+
         <h1>{currentCampaign.title}</h1>
         <p>{currentCampaign.description}</p>
 
@@ -58,15 +63,8 @@ const CampaignDetails = () => {
           Last updated: {new Date(currentCampaign.updatedAt).toLocaleString()}
         </p>
       </div>
-
-      <div className="details-back">
-        <button onClick={() => navigate(-1)} className="back-button">
-          ← Back
-        </button>
-      </div>
     </div>
   );
 };
 
 export default CampaignDetails;
-

@@ -1,4 +1,4 @@
-.details-container {
+ .details-container {
   padding: 20px;
   max-width: 800px;
   margin: 0 auto;
@@ -43,14 +43,14 @@
   text-align: left;
 }
 
-.back-button {
-  background-color: #4caf54;
-  color: #fff;
+
+
+.back-button-inside{
+  color: #4caf50;
   border: none;
-  padding: 10px 20px;
-  border-radius: 4px;
+  background-color: white;
+  font-weight: bold;
+  font-size: 0.9rem;
   cursor: pointer;
-  font-size: 14px;
+  transition: background 0.3s;
 }
-
-

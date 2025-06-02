@@ -39,7 +39,7 @@ const CampaignForm = () => {
     }
   }, [id, currentCampaign, imageFile]);
 
-  const handleImageChange = (e) => {
+  const handleImageChange = (e) => { 
     const file = e.target.files[0];
     if (file) {
       setImageFile(file);
