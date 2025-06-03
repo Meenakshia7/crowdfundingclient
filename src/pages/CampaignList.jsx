@@ -15,12 +15,16 @@ const CampaignList = () => {
     dispatch(fetchCampaigns());
   }, [dispatch]);
 
-  // Calculate displayed campaigns
+  // ✅ Filter only active or completed campaigns
+  const visibleCampaigns = campaigns.filter(
+    c => c.status === 'active' || c.status === 'completed'
+  );
+
+  // Calculate pagination
+  const totalPages = Math.ceil(visibleCampaigns.length / campaignsPerPage);
   const indexOfLast = currentPage * campaignsPerPage;
   const indexOfFirst = indexOfLast - campaignsPerPage;
-  const currentCampaigns = campaigns.slice(indexOfFirst, indexOfLast);
-
-  const totalPages = Math.ceil(campaigns.length / campaignsPerPage);
+  const currentCampaigns = visibleCampaigns.slice(indexOfFirst, indexOfLast);
 
   const handleNext = () => {
     if (currentPage < totalPages) {
@@ -43,8 +47,8 @@ const CampaignList = () => {
         <h1>Campaigns</h1>
       </div>
 
-      {campaigns.length === 0 ? (
-        <p>No campaigns found.</p>
+      {visibleCampaigns.length === 0 ? (
+        <p>No active or completed campaigns found.</p>
       ) : (
         <>
           <div
@@ -55,8 +59,8 @@ const CampaignList = () => {
               <CampaignCard
                 key={campaign._id}
                 campaign={campaign}
-                showEdit={false}  // ✅ explicitly no edit button here
-                allowWithdraw={false}  // 👈 explicitly block withdraw here
+                showEdit={false}
+                allowWithdraw={false}
               />
             ))}
           </div>
@@ -108,6 +112,3 @@ const CampaignList = () => {
 };
 
 export default CampaignList;
-
-
-

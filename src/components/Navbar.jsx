@@ -1,6 +1,4 @@
 
-
-
 import React, { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
@@ -16,6 +14,7 @@ const Navbar = () => {
 
   const isLoggedIn = useSelector(selectIsLoggedIn);
   const isAdmin = useSelector(selectIsAdmin);
+  const authStatus = useSelector(state => state.auth.status); // Add this to track loading state
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
@@ -36,11 +35,26 @@ const Navbar = () => {
     };
   }, []);
 
+  // While auth is loading, optionally show a loading placeholder or nothing
+  if (authStatus === 'loading') {
+    return (
+      <nav className="navbar">
+        <div className="navbar-left">
+          <Link to="/" className="navbar-logo">
+            <span className="logo-text">FUNDhub</span>
+          </Link>
+        </div>
+        <div className="navbar-right">
+          <span>Loading...</span>
+        </div>
+      </nav>
+    );
+  }
+
   return (
     <nav className="navbar">
       <div className="navbar-left">
         <Link to="/" className="navbar-logo">
-
           <span className="logo-text">FUNDhub</span>
         </Link>
       </div>
@@ -50,7 +64,8 @@ const Navbar = () => {
         {isLoggedIn && <Link to="/dashboard">Dashboard</Link>}
         <Link to="/campaigns">Campaigns</Link>
         <Link to="/about">About</Link>
-        {isAdmin && <Link to="/admin">Admin Panel</Link>}
+        {/* Only show Admin Panel if user is logged in AND admin */}
+        {isLoggedIn && isAdmin && <Link to="/admin">Admin Panel</Link>}
 
         {isLoggedIn ? (
           <div className={`dropdown ${dropdownOpen ? 'open' : ''}`} ref={dropdownRef}>
@@ -71,8 +86,6 @@ const Navbar = () => {
               </button>
             </div>
           </div>
-
-
         ) : (
           <Link to="/auth">Login / Register</Link>
         )}

@@ -1,4 +1,5 @@
 
+
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import campaignAPI from './campaignAPI';
 
@@ -118,8 +119,12 @@ const campaignSlice = createSlice({
 
       // Create campaign
       .addCase(createCampaign.fulfilled, (state, action) => {
-        state.campaigns.push(action.payload);
-        state.userCampaigns.push(action.payload);
+        const newCampaign = action.payload;
+
+        // Only push into userCampaigns (not general list) if it's pending
+        if (newCampaign.status === 'pending') {
+          state.userCampaigns.push(newCampaign);
+        }
       })
 
       // Update campaign
@@ -146,7 +151,3 @@ const campaignSlice = createSlice({
 export const { clearCurrentCampaign } = campaignSlice.actions;
 
 export default campaignSlice.reducer;
-
-
-
-

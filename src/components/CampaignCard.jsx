@@ -1,4 +1,5 @@
 
+
 import React, { useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { Link, useNavigate } from 'react-router-dom';
@@ -166,7 +167,17 @@ const CampaignCard = ({ campaign, onUpdate, showEdit = false, allowWithdraw = fa
 
               {showEdit && (
                 <>
-                  {campaign.withdrawn ? (
+                  {campaign.status === 'rejected' ? (
+                    <button
+                      onClick={handleDelete}
+                      className="btn delete-btn"
+                      title="Delete Campaign"
+                      aria-label="Delete Campaign"
+                      disabled={loading}
+                    >
+                      <FiTrash2 size={20} />
+                    </button>
+                  ) : campaign.withdrawn ? (
                     <>
                       <button
                         onClick={handleDelete}
@@ -216,7 +227,7 @@ const CampaignCard = ({ campaign, onUpdate, showEdit = false, allowWithdraw = fa
                 </>
               )}
 
-              {!campaign.withdrawn && !isGoalReached && (
+              {!campaign.withdrawn && !isGoalReached && campaign.status !== 'rejected' && (
                 <button
                   onClick={() => navigate(`/donate/${campaign?._id}`)}
                   className="btn donate-btn"
@@ -250,6 +261,3 @@ CampaignCard.propTypes = {
 };
 
 export default CampaignCard;
-
-
-

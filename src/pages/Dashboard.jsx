@@ -1,11 +1,11 @@
 
-
 import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { selectIsAdmin } from '../features/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import CampaignCard from '../components/CampaignCard';
+import StatsDashboard from '../features/admin/StatsDashboard';
 import './dashboard.css';
 
 const Dashboard = () => {
@@ -37,24 +37,28 @@ const Dashboard = () => {
 
   useEffect(() => {
     const fetchMyCampaigns = async () => {
-      if (!profile) return;
       try {
         const user = JSON.parse(localStorage.getItem('user'));
-        const res = await axios.get('http://localhost:3001/api/campaigns', {
+        const res = await axios.get('http://localhost:3001/api/campaigns/my', {
           headers: { Authorization: `Bearer ${user.token}` },
         });
-        const myOwnCampaigns = res.data.filter(c => c.owner._id === profile._id);
-        setMyCampaigns(myOwnCampaigns);
+        setMyCampaigns(res.data);
       } catch (err) {
-        console.error(err);
-        setError('Failed to load campaigns.');
+        console.error('Failed to fetch campaigns:', err.response?.data || err.message);
+        if (err.response?.status === 401) {
+          setError('Session expired. Please log in again.');
+          localStorage.removeItem('user');
+          navigate('/auth');
+        } else {
+          setError('Failed to load campaigns.');
+        }
       }
     };
 
     if (view === 'campaigns') {
       fetchMyCampaigns();
     }
-  }, [view, profile]);
+  }, [view, navigate]);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
@@ -67,11 +71,7 @@ const Dashboard = () => {
   };
 
   const handleCampaignUpdate = (updatedCampaign) => {
-    if (!updatedCampaign) {
-      // If null, remove (deleted)
-      return;
-    }
-
+    if (!updatedCampaign) return;
     setMyCampaigns(prev =>
       prev.map(c => (c._id === updatedCampaign._id ? updatedCampaign : c))
     );
@@ -88,6 +88,9 @@ const Dashboard = () => {
   const renderContent = () => {
     switch (view) {
       case 'overview':
+        if (isAdmin) {
+          return <StatsDashboard />; // show admin stats dashboard
+        }
         return (
           <div>
             <h2>Dashboard Overview</h2>
@@ -101,22 +104,20 @@ const Dashboard = () => {
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <h2>My Campaigns</h2>
-              <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-                <button
-                  onClick={() => navigate('/campaigns/new')}
-                  style={{
-                    padding: '8px 16px',
-                    backgroundColor: '#4CAF50',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '4px',
-                    cursor: 'pointer',
-                    fontWeight: 'bold'
-                  }}
-                >
-                  + Create New Campaign
-                </button>
-              </div>
+              <button
+                onClick={() => navigate('/campaigns/new')}
+                style={{
+                  padding: '8px 16px',
+                  backgroundColor: '#4CAF50',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  fontWeight: 'bold'
+                }}
+              >
+                + Create New Campaign
+              </button>
             </div>
 
             {myCampaigns.length === 0 ? (
@@ -136,7 +137,7 @@ const Dashboard = () => {
                         key={campaign._id}
                         campaign={campaign}
                         showEdit={true}
-                        allowWithdraw={isGoalReached} // ✅ only allow withdraw if goal reached
+                        allowWithdraw={isGoalReached}
                         onUpdate={handleCampaignUpdate}
                       />
                     );
@@ -212,4 +213,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
