@@ -1,5 +1,4 @@
 
-// src/features/auth/authSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
@@ -37,7 +36,6 @@ export const registerUser = createAsyncThunk(
   }
 );
 
-// NEW: Forgot Password
 export const forgotPassword = createAsyncThunk(
   'auth/forgotPassword',
   async ({ email, newPassword }, thunkAPI) => {
@@ -46,7 +44,7 @@ export const forgotPassword = createAsyncThunk(
         email,
         newPassword,
       });
-      return response.data; // probably { message: 'Password reset successfully' }
+      return response.data; // likely { message: 'Password reset successfully' }
     } catch (err) {
       return thunkAPI.rejectWithValue(err.response?.data?.message || 'Password reset failed');
     }
@@ -59,19 +57,28 @@ const authSlice = createSlice({
     user: JSON.parse(localStorage.getItem('user')) || null,
     status: 'idle',
     error: null,
+    message: null, // <-- for success messages like forgot password
   },
   reducers: {
     logout: (state) => {
       state.user = null;
+      state.status = 'idle';
+      state.error = null;
+      state.message = null;
       localStorage.removeItem('user');
     },
+    clearMessages: (state) => {
+      state.error = null;
+      state.message = null;
+    }
   },
   extraReducers: (builder) => {
     builder
-      // Login cases
+      // Login
       .addCase(loginUser.pending, (state) => {
         state.status = 'loading';
         state.error = null;
+        state.message = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
@@ -82,10 +89,11 @@ const authSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Register cases
+      // Register
       .addCase(registerUser.pending, (state) => {
         state.status = 'loading';
         state.error = null;
+        state.message = null;
       })
       .addCase(registerUser.fulfilled, (state, action) => {
         state.status = 'succeeded';
@@ -96,14 +104,15 @@ const authSlice = createSlice({
         state.error = action.payload;
       })
 
-      // Forgot password cases
+      // Forgot Password
       .addCase(forgotPassword.pending, (state) => {
         state.status = 'loading';
         state.error = null;
+        state.message = null;
       })
       .addCase(forgotPassword.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        // we don’t set user here, only show success message
+        state.message = action.payload.message || 'Password reset successful';
       })
       .addCase(forgotPassword.rejected, (state, action) => {
         state.status = 'failed';
@@ -112,7 +121,12 @@ const authSlice = createSlice({
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, clearMessages } = authSlice.actions;
+
 export const selectIsLoggedIn = (state) => !!state.auth.user;
 export const selectIsAdmin = (state) => state.auth.user?.role === 'admin';
+
 export default authSlice.reducer;
+  //optional success after forget messgwe yu can delete if you dont want that
+
+

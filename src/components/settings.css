@@ -1,0 +1,57 @@
+.settings-container {
+  max-width: 600px;
+  margin: auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.settings-container h2 {
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.settings-container section {
+  margin-bottom: 2rem;
+}
+
+.settings-container input {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.settings-container button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  background: #4caf50;
+  color: white;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.settings-container button:hover {
+  background: #45a049;
+}
+
+.danger-zone .logout {
+  background-color: #ff9800;
+  margin-right: 10px;
+}
+
+.danger-zone .delete {
+  background-color: #f44336;
+}
+
+.message-box {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+  padding: 10px;
+  margin-bottom: 20px;
+  border-radius: 6px;
+}

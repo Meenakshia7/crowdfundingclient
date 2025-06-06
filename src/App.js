@@ -7,7 +7,7 @@ import Home from './pages/Home';
 import CampaignList from './pages/CampaignList';
 import CampaignDetails from './pages/CampaignDetails';
 import CampaignForm from './features/campaigns/CampaignForm';
-import StatsDashboard from './features/admin/StatsDashboard';
+import AdminCampaignsByStatus from './pages/AdminCampaignsByStatus';
 import UserManagement from './features/admin/UserManagement';
 import MainLayout from './components/MainLayout';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -21,6 +21,7 @@ import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
 import AdminPendingCampaigns from './pages/AdminPendingCampaigns'; // ✅ NEW import
 import AdminPanel from './pages/AdminPanel';
+import Settings from './components/settings';
 
 function App() {
   return (
@@ -51,26 +52,20 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/campaigns" element={<CampaignList />} />
             <Route path="/campaigns/:id" element={<CampaignDetails />} />
-
+            <Route path="/settings" element={<Settings />} />
             {/* Create new campaign */}
             <Route path="/campaigns/new" element={<CampaignForm />} />
 
             {/* Edit existing campaign */}
             <Route path="/campaigns/:id/edit" element={<CampaignForm />} />
 
-            {/* Admin-only routes */}
-            {/* <Route element={<AdminRoute />}>
-              <Route path="/admin">
-                <Route index element={<StatsDashboard />} />        {/* Admin dashboard */}
-                {/* <Route path="users" element={<UserManagement />} /> {/* User management */}
-                {/* <Route path="pending-campaigns" element={<AdminPendingCampaigns />} /> {/* ✅ NEW admin approvals page */}
-              {/* </Route> */} 
-            {/* </Route> */}
+  
             <Route element={<AdminRoute />}>
   <Route path="/admin">
     <Route index element={<AdminPanel />} /> {/* Admin main panel */}
     <Route path="pending-campaigns" element={<AdminPendingCampaigns />} /> {/* Pending campaigns */}
     <Route path="users" element={<UserManagement />} /> {/* User management */}
+    <Route path="campaigns/status/:status" element={<AdminCampaignsByStatus />} />
   </Route>
 </Route>
 

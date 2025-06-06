@@ -1,20 +1,27 @@
 
-
 import apiClient from '../../utils/apiClient';
 
 const adminAPI = {
-  // Existing User Management APIs (no token needed here, assumed handled by interceptor)
+  // ===== User Management APIs =====
   getAllUsers: () => apiClient.get('/admin/users'),
   getUserById: (id) => apiClient.get(`/admin/users/${id}`),
   updateUser: (id, data) => apiClient.put(`/admin/users/${id}`, data),
   deleteUser: (id) => apiClient.delete(`/admin/users/${id}`),
 
-  // System Stats
-  getSystemStats: () => apiClient.get('/admin/stats'),
+  // ===== System Stats =====
+  getSystemStats: (token) =>
+    apiClient.get('/admin/stats', {
+      headers: { Authorization: `Bearer ${token}` },
+    }),
 
-  // Campaign Management — all need auth token in headers, so accept token param
+  // ===== Campaign Management =====
   getPendingCampaigns: (token) =>
     apiClient.get('/admin/campaigns/pending', {
+      headers: { Authorization: `Bearer ${token}` },
+    }),
+
+  getCampaignsByStatus: (status, token) =>
+    apiClient.get(`/admin/campaigns/status/${status}`, {
       headers: { Authorization: `Bearer ${token}` },
     }),
 
@@ -32,8 +39,13 @@ const adminAPI = {
     apiClient.put(`/admin/campaigns/${id}`, data, {
       headers: {
         Authorization: `Bearer ${token}`,
-        'Content-Type': 'multipart/form-data', // if sending form data with image upload
+        'Content-Type': 'multipart/form-data',
       },
+    }),
+
+  deleteCampaign: (id, token) =>
+    apiClient.delete(`/admin/campaigns/${id}`, {
+      headers: { Authorization: `Bearer ${token}` },
     }),
 };
 

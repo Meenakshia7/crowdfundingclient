@@ -1,17 +1,34 @@
+
+
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// Fetch donations by campaign
+// Async thunk to fetch donations by campaign ID
 export const fetchDonationsByCampaign = createAsyncThunk(
   'donations/fetchByCampaign',
   async (campaignId, thunkAPI) => {
     try {
-      const { data } = await axios.get(`/api/donations/campaign/${campaignId}`);
+      const state = thunkAPI.getState();
+      // Adjust this based on how you store user token in your auth slice
+      const token = state.auth?.user?.token || state.auth?.token;
+
+      const config = token
+        ? { headers: { Authorization: `Bearer ${token}` } }
+        : {};
+
+      const { data } = await axios.get(
+        `/api/donations/campaign/${campaignId}`,
+        config
+      );
+
       return data;
     } catch (error) {
-      return thunkAPI.rejectWithValue(
-        error.response?.data?.message || 'Failed to fetch donations'
-      );
+      // Defensive error message extraction
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        'Failed to fetch donations';
+      return thunkAPI.rejectWithValue(message);
     }
   }
 );
@@ -34,6 +51,7 @@ const donationSlice = createSlice({
     builder
       .addCase(fetchDonationsByCampaign.pending, (state) => {
         state.status = 'loading';
+        state.error = null;
       })
       .addCase(fetchDonationsByCampaign.fulfilled, (state, action) => {
         state.status = 'succeeded';
@@ -47,5 +65,4 @@ const donationSlice = createSlice({
 });
 
 export const { resetDonations } = donationSlice.actions;
-
 export default donationSlice.reducer;

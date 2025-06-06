@@ -14,3 +14,4 @@ export const getProfile = async () => {
   const response = await apiClient.get('/auth/profile');
   return response.data;
 };
+

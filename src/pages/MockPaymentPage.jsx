@@ -1,12 +1,10 @@
 
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import './MockPaymentPage.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft } from '@fortawesome/free-solid-svg-icons';
-
 
 const MockPaymentPage = () => {
   const navigate = useNavigate();
@@ -31,7 +29,7 @@ const MockPaymentPage = () => {
     return `₹${number.toLocaleString('en-IN')}`;
   };
 
-  // Fetch the campaign title using campaignId
+  // Fetch the campaign title
   useEffect(() => {
     const fetchCampaign = async () => {
       try {
@@ -78,6 +76,9 @@ const MockPaymentPage = () => {
     try {
       setLoading(true);
 
+      const user = JSON.parse(localStorage.getItem('user'));
+      const token = user?.token;
+
       const donationPayload = {
         amount: Number(formData.amount),
         message: `Donation from ${formData.name}`,
@@ -86,21 +87,30 @@ const MockPaymentPage = () => {
         donorEmail: formData.email,
       };
 
+      const config = token
+        ? {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        : {}; // No headers if not logged in
+
       const response = await axios.post(
         'http://localhost:3001/api/donations',
-        donationPayload
+        donationPayload,
+        config
       );
 
       console.log('Donation response:', response.data);
 
       setPopupMessage(
-        ` Payment successfulL!\nThank you, ${formData.name}, for donating ${formatINR(
+        `✅ Payment successful!\nThank you, ${formData.name}, for donating ${formatINR(
           formData.amount
-        )} to "${campaignTitle}" campaign.`
+        )} to "${campaignTitle}".`
       );
     } catch (error) {
       console.error('Error making donation:', error);
-      setPopupMessage(' Payment failed. Please try again.');
+      setPopupMessage('❌ Payment failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -108,7 +118,7 @@ const MockPaymentPage = () => {
 
   const closePopup = () => {
     setPopupMessage('');
-    if (popupMessage.startsWith('✅ Payment successful')) {
+    if (popupMessage.startsWith('✅')) {
       navigate('/campaigns');
     }
   };
@@ -161,9 +171,8 @@ const MockPaymentPage = () => {
       </form>
 
       <button onClick={() => navigate(-1)} className="back-button">
-  <FontAwesomeIcon icon={faChevronLeft} /> Back
-</button>
-
+        <FontAwesomeIcon icon={faChevronLeft} /> Back
+      </button>
 
       {popupMessage && (
         <div className="popup-message">
